@@ -91,6 +91,7 @@ class CalcWindow(QMainWindow):
         if '.' not in mathexpression.split()[-1]:
             mathexpression += '.'
             self.ui.input.setText(self.ui.input.text() + ',')
+            deleteIndex.update({len(self.ui.input.text()) - 1: len(mathexpression) - 1})
         self.processing()
 
     def add_action(self, math_act: str):
@@ -98,9 +99,11 @@ class CalcWindow(QMainWindow):
         if mathexpression[-1] in special_action or self.ui.input.text()[-1].isdigit():
             self.ui.input.setText(self.ui.input.text() + math_act)
             mathexpression += f' {math_act} '
+            deleteIndex.update({len(self.ui.input.text()) - 1: f'{len(mathexpression) - 3} {len(mathexpression) - 1}'})
         else:
             self.ui.input.setText(self.ui.input.text()[:-1] + math_act)
             mathexpression = mathexpression.replace(mathexpression.split()[-1][-1], f'{math_act} ')
+            deleteIndex.update({len(self.ui.input.text()) - 1: f'{len(mathexpression) - 4} {len(mathexpression) - 2}'})
         self.processing()
 
     def add_special_action(self, symbol: str):
@@ -108,8 +111,8 @@ class CalcWindow(QMainWindow):
         if not self.ui.input.text()[-1] == symbol:
             self.ui.input.setText(self.ui.input.text() + symbol)
             if symbol == '^':
-                symbol = ' ** '
-                mathexpression += symbol
+                mathexpression += ' ** '
+                deleteIndex.update({len(self.ui.input.text()) - 1: f'{len(mathexpression) - 4} {len(mathexpression) - 1}'})
             elif symbol == '!':
                 if mathexpression.split()[-1] == ')':  # for expression in scobs
                     temp = ''
@@ -126,7 +129,7 @@ class CalcWindow(QMainWindow):
                 else:
                     symbol = mathexpression.split()[-1]
                 mathexpression = mathexpression.replace(symbol, f'math.factorial({eval(symbol)})')
-
+                deleteIndex.update({len(self.ui.input.text()) - 1: f'{len(mathexpression) - len(f'math.factorial({eval(symbol)})')} {len(mathexpression) - 1}'}) # ХЕРЬ
         self.processing()
 
     def add_ready_function(self, function: str):
@@ -140,6 +143,7 @@ class CalcWindow(QMainWindow):
                 break
         if not functionincycle:
             mathexpression += f'math.{function}( '
+        deleteIndex.update({f'{len(self.ui.input.text()) - len(f'{function}') - 1} {len(self.ui.input.text()) - 1}': f'{len(mathexpression) - len(f'math.{function}( ')} {len(mathexpression) - 2}'})
         self.processing()
 
     def add_bracketed_ready_function(self, function: str):
@@ -150,7 +154,7 @@ class CalcWindow(QMainWindow):
         else:
             mathexpression = f'{function}( {mathexpression} )'
             self.ui.input.setText(f'{function}({self.ui.input.text()})')
-
+        deleteIndex.update({f'0 2, {len(self.ui.input.text() - 1)}': f'0 3, {len(mathexpression) - 1}'})
         self.processing()
 
     def add_scobs(self):
@@ -159,12 +163,14 @@ class CalcWindow(QMainWindow):
             scob = '(' if self.ui.input.text().count('(') == self.ui.input.text().count(')') else ')'
             mathexpression += f' {scob} '
             self.ui.input.setText(self.ui.input.text() + scob)
+            deleteIndex.update({f'{len(self.ui.input.text()) - 1}': f'{len(mathexpression) - 1}'})
         self.processing()
 
     def add_special_symbol(self, symbol: str):
         global mathexpression
         self.ui.input.setText(self.ui.input.text() + symbol)
         mathexpression += f'{symbol[0]}.{symbol[2:]}'
+        deleteIndex.update({f'{len(self.ui.input.text()) - len(symbol)} {len(self.ui.input.text()) - 1}': f'{len(mathexpression) - len(symbol)} {len(mathexpression) - 1}'})
         self.processing()
 
     def clear(self):
