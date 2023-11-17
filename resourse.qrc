@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="icons">
     <file>icons8-calc-100.png</file>
+    <file>svg-editor-image.svg</file>
     <file>outline_keyboard_backspace_white_48dp.png</file>
   </qresource>
 </RCC>

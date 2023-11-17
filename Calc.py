@@ -1,5 +1,7 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
+from PySide6.QtCore import (
+    QPropertyAnimation, QSequentialAnimationGroup, QPoint, QSize)
 from desing import Ui_MainWindow
 import math
 
@@ -13,7 +15,7 @@ class CalcWindow(QMainWindow):
         super(CalcWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
+        # main calculator
         # digit buttons
         self.ui.Button_0.clicked.connect(lambda: self.add_digit('0'))
         self.ui.Button_1.clicked.connect(lambda: self.add_digit('1'))
@@ -50,6 +52,8 @@ class CalcWindow(QMainWindow):
         self.ui.Button_Pi.clicked.connect(lambda: self.add_special_symbol('3,14159265359'))
         self.ui.Button_e.clicked.connect(lambda: self.add_special_symbol('2,71828182846'))
         self.ui.Button_equally.clicked.connect(lambda: self.equelly())  # result
+        # other button
+        self.ui.pushButton.clicked.connect(self.animMenu)
 
     def equelly(self):
         self.ui.input.setText(str(eval(mathexpression)))
@@ -182,6 +186,17 @@ class CalcWindow(QMainWindow):
                                     font-size: 30pt;
                                     border: none;''')
         self.ui.label.clear()
+    # Other
+
+    def animMenu(self):
+        self.child = QWidget(self)
+        self.child.setStyleSheet("background-color:red;border-radius:15px;")
+        self.child.resize(100, 100)
+        self.anim_2 = QPropertyAnimation(self.child, b"size")
+        self.anim_2.setEndValue(QSize(250, 150))
+        self.anim_2.setDuration(2000)
+        self.anim_2.start() 
+
 
 
 if __name__ == "__main__":
